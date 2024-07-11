@@ -34,13 +34,13 @@ open class AsyncViewModel<Content>: ObservableObject {
 
 public struct AsyncView<Content, ContentView: View, ErrorView: View>: View {
     @ObservedObject var viewModel: AsyncViewModel<Content>
-    var contentView: (Content) -> ContentView
-    var errorView: (Error) -> ErrorView
-    
+    @ViewBuilder var contentView: (Content) -> ContentView
+    @ViewBuilder var errorView: (Error) -> ErrorView
+
     public init(
         viewModel: AsyncViewModel<Content>,
-        contentView: @escaping (Content) -> ContentView,
-        errorView: @escaping (Error) -> ErrorView)
+        @ViewBuilder contentView: @escaping (Content) -> ContentView,
+        @ViewBuilder errorView: @escaping (Error) -> ErrorView)
     {
         _viewModel = ObservedObject(wrappedValue: viewModel)
         self.contentView = contentView
