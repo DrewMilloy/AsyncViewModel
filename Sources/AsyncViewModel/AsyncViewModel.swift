@@ -32,25 +32,30 @@ open class AsyncViewModel<Content>: ObservableObject {
     }
 }
 
-public struct AsyncView<Content, ContentView: View, ErrorView: View>: View {
+public struct AsyncView<Content, ContentView: View, ErrorView: View, CustomProgressView: View>: View {
     @ObservedObject var viewModel: AsyncViewModel<Content>
     @ViewBuilder var contentView: (Content) -> ContentView
     @ViewBuilder var errorView: (Error) -> ErrorView
+    @ViewBuilder var progressView: () -> CustomProgressView
 
     public init(
         viewModel: AsyncViewModel<Content>,
         @ViewBuilder contentView: @escaping (Content) -> ContentView,
-        @ViewBuilder errorView: @escaping (Error) -> ErrorView)
+        @ViewBuilder errorView: @escaping (Error) -> ErrorView,
+        @ViewBuilder progressView: @escaping () -> CustomProgressView)
     {
         _viewModel = ObservedObject(wrappedValue: viewModel)
         self.contentView = contentView
         self.errorView = errorView
+        self.progressView = progressView
     }
     
+    // write another initializer which defaults progressView to a SwiftUI ProgressView
+
     public var body: some View {
         switch viewModel.state {
         case .loading:
-            ProgressView()
+            progressView()
                 .task {
                     await viewModel.load()
                 }
